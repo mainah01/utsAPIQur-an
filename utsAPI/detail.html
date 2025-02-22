@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Surah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="container mt-4">
+    <h2 class="text-center">Detail Surah</h2>
+    <div id="detail-surah" class="mt-4"></div>
+    
+    <script>
+        $(document).ready(function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const surahId = urlParams.get('id');
+            
+            if (surahId) {
+                $.getJSON(`https://equran.id/api/v2/surat/${surahId}`, function (data) {
+                    let surah = data.data;
+                    let detailHTML = `<div class="card p-3">
+                                        <h4>${surah.namaLatin} (${surah.nama})</h4>
+                                        <p><strong>Arti:</strong> ${surah.arti}</p>
+                                        <p><strong>Jumlah Ayat:</strong> ${surah.jumlahAyat}</p>
+                                        <p><strong>Keterangan:</strong> ${surah.deskripsi}</p>
+                                        <h5>Ayat-Ayat:</h5>
+                                        <ul class="list-group">
+                                            ${surah.ayat.map(ayat => `<li class="list-group-item">
+                                                <p class="text-end" style="font-size: 1.5rem;">${ayat.teksArab}</p>
+                                                <p>${ayat.teksLatin}</p>
+                                                <p><em>${ayat.teksIndonesia}</em></p>
+                                            </li>`).join('')}
+                                        </ul>
+                                        <audio controls class="mt-3">
+                                            <source src="${surah.audioFull[0]}" type="audio/mpeg">
+                                            Browser Anda tidak mendukung elemen audio.
+                                        </audio>
+                                     </div>`;
+                    $("#detail-surah").html(detailHTML);
+                });
+            } else {
+                $("#detail-surah").html("<p class='text-danger'>Surah tidak ditemukan!</p>");
+            }
+        });
+    </script>
+</body>
+</html>
